@@ -30,7 +30,9 @@ export function attachInput(canvas, game) {
     const x = (event.clientX - box.left) * (canvas.width / box.width);
     const y = (event.clientY - box.top) * (canvas.height / box.height);
     const layout = game.layout ?? { buttons: [], cards: [] };
-    for (const btn of layout.buttons) {
+    const buttons = layout.buttons ?? [];
+    const cards = layout.cards ?? [];
+    for (const btn of buttons) {
       if (!pointIn(x, y, btn)) continue;
       if (btn.id === 'begin') {
         startDuel(game);
@@ -44,7 +46,7 @@ export function attachInput(canvas, game) {
       }
       return;
     }
-    for (const slot of layout.cards) {
+    for (const slot of cards) {
       if (!pointIn(x, y, slot)) continue;
       if (game.phase !== 'play' || game.turnOwner !== 'player') return;
       if (game.selected === slot.card) {
@@ -64,7 +66,7 @@ export function attachInput(canvas, game) {
     const y = (event.clientY - box.top) * (canvas.height / box.height);
     const layout = game.layout ?? { cards: [] };
     game.hovered = null;
-    for (const slot of layout.cards) {
+    for (const slot of layout.cards ?? []) {
       if (pointIn(x, y, slot)) game.hovered = slot.card;
     }
   });

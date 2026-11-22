@@ -137,11 +137,13 @@ export function checkEnd(game) {
   if (game.phase !== 'play') return;
   if (game.warden.life <= 0) {
     game.phase = 'won';
+    game.selected = null;
     game.endedAt = Date.now();
     game.message = 'VICTORY — the Warden bows, and the court is yours.';
     pushLog(game, 'The Ash Warden falls. You win the court!');
   } else if (game.player.life <= 0) {
     game.phase = 'lost';
+    game.selected = null;
     game.endedAt = Date.now();
     game.message = 'DEFEAT — your ember gutters out.';
     pushLog(game, 'Your ember gutters out. The Warden keeps the court.');

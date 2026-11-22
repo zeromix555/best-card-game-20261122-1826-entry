@@ -100,10 +100,11 @@ function drawCardBack(ctx, x, y, w, h) {
   roundRect(ctx, x + 8, y + 8, w - 16, h - 16, 7);
   ctx.stroke();
   ctx.fillStyle = '#d9a441';
-  ctx.font = `bold ${Math.floor(h / 7)}px ${FONT}`;
+  const backFont = w < 100 ? 8 : 11;
+  ctx.font = `bold ${backFont}px ${FONT}`;
   ctx.textAlign = 'center';
   ctx.fillText('✦', x + w / 2, y + h / 2 + 8);
-  ctx.font = `bold 11px ${FONT}`;
+  ctx.font = `bold ${backFont}px ${FONT}`;
   ctx.fillText('EMBER COURT', x + w / 2, y + h - 18);
 }
 
@@ -192,12 +193,12 @@ function button(ctx, rect, label, enabled) {
   ctx.fillText(label, rect.x + rect.w / 2, rect.y + rect.h / 2 + 7);
 }
 
-function drawLog(ctx, game, x, y, w) {
-  ctx.textAlign = 'left';
-  ctx.font = `14px ${FONT}`;
+function drawLog(ctx, game, cx, y) {
+  ctx.textAlign = 'center';
+  ctx.font = `15px ${FONT}`;
   game.log.forEach((line, i) => {
     ctx.fillStyle = i === game.log.length - 1 ? '#ffe9b0' : 'rgba(245,233,201,0.6)';
-    ctx.fillText(line, x, y + i * 19, w);
+    ctx.fillText(line, cx, y + i * 20);
   });
 }
 
@@ -250,10 +251,10 @@ function drawTable(ctx, game, w, h) {
   ctx.font = `bold 22px ${FONT}`;
   ctx.fillText('👑 THE ASH WARDEN', 48, 52);
   lifeBar(ctx, 48, 66, 300, '', warden.life, warden.maxLife, warden.shield, '#e5484d');
-  emberGems(ctx, 420, 66, warden.ember, Math.max(warden.maxEmber, 1));
+  emberGems(ctx, 580, 66, warden.ember, Math.max(warden.maxEmber, 1));
   ctx.font = `15px ${FONT}`;
   ctx.fillStyle = 'rgba(245,233,201,0.8)';
-  ctx.fillText(`Deck ${warden.deck.length} · Hand ${warden.hand.length}`, 700, 84);
+  ctx.fillText(`Deck ${warden.deck.length} · Hand ${warden.hand.length}`, 830, 84);
   // Warden's face-down hand.
   warden.hand.forEach((_, i) => {
     const bw = 74;
@@ -280,14 +281,14 @@ function drawTable(ctx, game, w, h) {
   ctx.font = '14px ' + FONT;
   ctx.textAlign = 'center';
   ctx.fillText(`YOUR DECK ${player.deck.length}`, 85, 452);
-  ctx.fillStyle = '#8a7a5a';
-  ctx.fillRect(1150, 330, 74, 104);
-  ctx.strokeStyle = '#d9a441';
-  ctx.strokeRect(1150, 330, 74, 104);
+  // Discard pile: the last card played, face down in the pile.
+  drawCardBack(ctx, 1150, 330, 74, 104);
   ctx.fillStyle = '#f5e9c9';
+  ctx.font = '14px ' + FONT;
+  ctx.textAlign = 'center';
   ctx.fillText(`DISCARD ${player.discard.length}`, 1187, 452);
   // End turn button.
-  const endTurn = { x: w - 268, y: 300, w: 220, h: 52 };
+  const endTurn = { x: w - 268, y: 238, w: 220, h: 52 };
   button(ctx, endTurn, 'END TURN  ⏎', game.turnOwner === 'player');
   layout.buttons.push({ id: 'endTurn', ...endTurn });
   // Player row.
@@ -296,10 +297,10 @@ function drawTable(ctx, game, w, h) {
   ctx.font = `bold 22px ${FONT}`;
   ctx.fillText('🃏 YOU', 48, 512);
   lifeBar(ctx, 48, 526, 300, '', player.life, player.maxLife, player.shield, '#46a758');
-  emberGems(ctx, 420, 526, player.ember, Math.max(player.maxEmber, 1));
+  emberGems(ctx, 580, 526, player.ember, Math.max(player.maxEmber, 1));
   ctx.font = `15px ${FONT}`;
   ctx.fillStyle = 'rgba(245,233,201,0.8)';
-  ctx.fillText(`Damage dealt ${game.stats.damageDealt} · Resonances ${game.stats.resonances}`, 700, 544);
+  ctx.fillText(`Damage dealt ${game.stats.damageDealt} · Resonances ${game.stats.resonances}`, 830, 544);
   // Player hand, fanned across the bottom.
   const n = player.hand.length;
   const gap = Math.min(168, (w - 120) / Math.max(1, n));
@@ -315,7 +316,7 @@ function drawTable(ctx, game, w, h) {
     });
     layout.cards.push({ card, ...rect });
   });
-  drawLog(ctx, game, 48, 610, 560);
+  drawLog(ctx, game, w / 2, 348);
   ctx.textAlign = 'right';
   ctx.fillStyle = 'rgba(245,233,201,0.65)';
   ctx.font = `13px ${FONT}`;
@@ -325,7 +326,7 @@ function drawTable(ctx, game, w, h) {
 
 function drawEndScreen(ctx, game, w, h, won) {
   drawTable(ctx, game, w, h);
-  ctx.fillStyle = won ? 'rgba(20,16,2,0.72)' : 'rgba(8,4,6,0.78)';
+  ctx.fillStyle = won ? 'rgba(20,16,2,0.86)' : 'rgba(8,4,6,0.88)';
   ctx.fillRect(0, 0, w, h);
   ctx.textAlign = 'center';
   ctx.fillStyle = won ? '#ffd94d' : '#e5484d';
